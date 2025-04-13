@@ -136,6 +136,14 @@
       position: relative;
     }
     
+    .tabs-container {
+      display: flex;
+      height: 2.0rem;
+      background-color: #f5f5f5;
+      border-bottom: 1px solid #e1e1e1;
+      align-items: center;
+    }
+    
     .welcome-container {
       display: flex;
       flex-direction: column;
@@ -556,6 +564,55 @@
       margin: 0;
       padding: 0;
     }
+    
+    /* Tab styles */
+    .tab-arrows {
+      display: flex;
+      align-items: center;
+      border-right: 1px solid #e1e1e1;
+      height: 100%;
+    }
+    
+    .tab-arrow {
+      width: 1.75rem;
+      height: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .tab-arrow:hover {
+      background-color: transparent;
+    }
+    
+    .tab {
+      height: 100%;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      border-right: 1px solid #e1e1e1;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .tab.active {
+      background-color: #fff;
+    }
+
+
+    .tab-name {
+      color: #333;
+    }
+    
+    .unsaved-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #4a9eff;
+      margin-right: 6px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -582,87 +639,96 @@
   <div class="container">
     <!-- Main content area -->
     <div class="main-content">
-    <div class="welcome-container">
-      <img class="zen-logo" src="../../assets/icons/zen-logo.svg" alt="Zen Logo">
-      <div class="subtitle">Minimalistic code editor for focused work</div>
-      
-      <div class="options-container">
-        <div class="option-button" id="open-project">Open Project</div>
-        <div class="option-button" id="new-file">New File</div>
-        <div class="option-button" id="clone-repo">Clone Repository</div>
+      <div class="tabs-container">
+        <div class="tab-arrows">
+          <div class="tab-arrow" id="tab-arrow-left">
+            <img src="../../assets/icons/arrow_left.svg" alt="Previous Tab">
+          </div>
+          <div class="tab-arrow" id="tab-arrow-right">
+            <img src="../../assets/icons/arrow_right.svg" alt="Next Tab">
+          </div>
+        </div>
+        <!-- Tabs will be dynamically added here -->
+        <div class="tab active" data-tab-id="welcome">
+          <div class="tab-name">Welcome to Zen</div>
+        </div>
+      </div>
+      <div class="welcome-container" data-content-id="welcome">
+        <img class="zen-logo" src="../../assets/icons/zen-logo.svg" alt="Zen Logo">
+        <div class="subtitle">Minimalistic code editor for focused work</div>
         
-        <div class="recent-projects-container" id="recent-projects-container">
-          <div class="recent-projects-header">Recent Projects</div>
-          <div class="recent-projects-list" id="recent-projects-list">
-            <!-- Recent projects will be dynamically populated -->
+        <div class="options-container">
+          <div class="option-button" id="open-project">Open Project</div>
+          <div class="option-button" id="new-file">New File</div>
+          <div class="option-button" id="clone-repo">Clone Repository</div>
+        </div>
+        
+        <div class="settings-panel">
+          <div class="checkbox-container">
+            <div class="checkbox-item" id="enable-vim">
+              <div class="checkbox checkbox-checked"></div>
+              <div class="checkbox-label">Enable vim mode</div>
+              </div>
+              
+            </div>
           </div>
         </div>
       </div>
       
-      <div class="settings-panel">
-        <div class="checkbox-container">
-          <div class="checkbox-item" id="enable-vim">
-            <div class="checkbox checkbox-checked"></div>
-            <div class="checkbox-label">Enable vim mode</div>
-            </div>
-            
-          </div>
+      <!-- Sidebar component -->
+      <div class="sidebar" id="sidebar">
+        <!-- Empty sidebar for now -->
+        <div class="resize-handle" id="resize-handle"></div>
+      </div>
+    </div>
+    
+    <div class="downbar">
+      <div class="downbar-left" id="downbar-left">
+        <!-- Left side content -->
+      </div>
+      <div class="downbar-right" id="downbar-right">
+        <div class="downbar-button active" id="sidebar-toggle">
+          <img class="downbar-icon flip-horizontal" src="../../assets/icons/file-tree.svg" alt="File Tree">
         </div>
       </div>
     </div>
     
-    <!-- Sidebar component -->
-    <div class="sidebar" id="sidebar">
-      <!-- Empty sidebar for now -->
-      <div class="resize-handle" id="resize-handle"></div>
-    </div>
-  </div>
-  
-  <div class="downbar">
-    <div class="downbar-left" id="downbar-left">
-      <!-- Left side content -->
-    </div>
-    <div class="downbar-right" id="downbar-right">
-      <div class="downbar-button active" id="sidebar-toggle">
-        <img class="downbar-icon flip-horizontal" src="../../assets/icons/file-tree.svg" alt="File Tree">
+    <!-- Command palette -->
+    <div class="command-palette" id="command-palette">
+      <input type="text" class="command-palette-input" id="command-palette-input" placeholder="Type a command...">
+      <div class="command-palette-list" id="command-palette-list">
+        <!-- Command items will be generated dynamically -->
       </div>
     </div>
-  </div>
-  
-  <!-- Command palette -->
-  <div class="command-palette" id="command-palette">
-    <input type="text" class="command-palette-input" id="command-palette-input" placeholder="Type a command...">
-    <div class="command-palette-list" id="command-palette-list">
-      <!-- Command items will be generated dynamically -->
-    </div>
-  </div>
-  
-  <!-- Reorganize UI dialog -->
-  <div class="reorganize-dialog" id="reorganize-dialog">
-    <div class="reorganize-dialog-header">Reorganize UI</div>
-    <div class="reorganize-dialog-content">
-      <div class="reorganize-option">
-        <div class="reorganize-option-label">Sidebar Position</div>
-        <div class="reorganize-option-actions">
-          <button class="reorganize-button active" id="sidebar-left">Left</button>
-          <button class="reorganize-button" id="sidebar-right">Right</button>
+    
+    <!-- Reorganize UI dialog -->
+    <div class="reorganize-dialog" id="reorganize-dialog">
+      <div class="reorganize-dialog-header">Reorganize UI</div>
+      <div class="reorganize-dialog-content">
+        <div class="reorganize-option">
+          <div class="reorganize-option-label">Sidebar Position</div>
+          <div class="reorganize-option-actions">
+            <button class="reorganize-button active" id="sidebar-left">Left</button>
+            <button class="reorganize-button" id="sidebar-right">Right</button>
+          </div>
         </div>
       </div>
+      <div class="reorganize-dialog-footer">
+        <button class="reorganize-button" id="reorganize-cancel">Cancel</button>
+        <button class="reorganize-button" id="reorganize-apply">Apply</button>
+      </div>
     </div>
-    <div class="reorganize-dialog-footer">
-      <button class="reorganize-button" id="reorganize-cancel">Cancel</button>
-      <button class="reorganize-button" id="reorganize-apply">Apply</button>
-    </div>
+    
+    <!-- Overlay for modals -->
+    <div class="overlay" id="overlay"></div>
   </div>
-  
-  <!-- Overlay for modals -->
-  <div class="overlay" id="overlay"></div>
 
   <script>
     /* Element references */
     const openProjectBtn = document.getElementById('open-project');
     const newFileBtn = document.getElementById('new-file');
     const cloneRepoBtn = document.getElementById('clone-repo');
+    const tabs = document.querySelectorAll('.tab');
 
     const minimizeBtn = document.getElementById('minimize-button');
     const maximizeBtn = document.getElementById('maximize-button');
@@ -750,9 +816,6 @@
       // Show the sidebar and ensure it's not hidden
       sidebar.classList.remove('hidden');
       sidebarToggle.classList.add('active');
-      
-      // Hide welcome screen
-      welcomeContainer.style.display = 'none';
       
       // Initialize file tree
       initializeFileTree(result.fileTree);
@@ -1338,9 +1401,6 @@
           
           // The project opening and UI update will be handled by the
           // onProjectOpened handler
-          
-          // Load recent projects again after opening a new one
-          loadRecentProjects();
         }
       } catch (err) {
         console.error('Error opening project:', err);
@@ -1490,66 +1550,43 @@
 
     // Load recent projects
     function loadRecentProjects() {
-      window.api.getRecentProjects().then(projects => {
-        const recentProjectsList = document.getElementById('recent-projects-list');
-        const recentProjectsContainer = document.getElementById('recent-projects-container');
-        
-        // If no recent projects, hide the container
-        if (!projects || projects.length === 0) {
-          recentProjectsContainer.style.display = 'none';
-          return;
-        }
-        
-        // Show container and populate list
-        recentProjectsContainer.style.display = 'block';
-        recentProjectsList.innerHTML = '';
-        
-        projects.forEach(projectPath => {
-          const projectName = projectPath.split('/').pop();
+      // Function emptied to remove recent projects functionality
+    }
+
+    /* Tab functionality */
+    function setupTabs() {
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs
+          tabs.forEach(t => t.classList.remove('active'));
           
-          const item = document.createElement('div');
-          item.className = 'recent-project-item';
-          item.dataset.path = projectPath;
+          // Add active class to clicked tab
+          tab.classList.add('active');
           
-          // Add folder icon
-          const folderIcon = document.createElement('img');
-          folderIcon.className = 'recent-project-icon';
-          folderIcon.src = '../../assets/icons/file_icons/project.svg';
-          folderIcon.alt = 'Project';
-          folderIcon.width = 16;
-          folderIcon.height = 16;
-          item.appendChild(folderIcon);
-          
-          const pathSpan = document.createElement('div');
-          pathSpan.className = 'recent-project-path';
-          pathSpan.textContent = projectName;
-          pathSpan.title = projectPath;
-          
-          item.appendChild(pathSpan);
-          
-          item.addEventListener('click', () => {
-            openRecentProject(projectPath);
+          // Hide all content containers
+          const contentContainers = document.querySelectorAll('[data-content-id]');
+          contentContainers.forEach(container => {
+            container.style.display = 'none';
           });
           
-          recentProjectsList.appendChild(item);
+          // Show the content container that matches the tab
+          const tabId = tab.dataset.tabId;
+          const contentContainer = document.querySelector(`[data-content-id="${tabId}"]`);
+          if (contentContainer) {
+            contentContainer.style.display = 'flex';
+            if (tabId === 'welcome') {
+              contentContainer.style.flexDirection = 'column';
+              contentContainer.style.justifyContent = 'center';
+              contentContainer.style.alignItems = 'center';
+              contentContainer.style.height = '100%';
+            }
+          }
         });
       });
     }
-    
-    // Open a recent project by path
-    function openRecentProject(projectPath) {
-      window.api.openProject(projectPath).then(result => {
-        if (result) {
-          // The project opening and UI update will be handled by the
-          // onProjectOpened handler
-        }
-      }).catch(err => {
-        console.error('Error opening recent project:', err);
-      });
-    }
-    
-    // Load recent projects on startup
-    loadRecentProjects();
+
+    // Setup tabs on page load
+    setupTabs();
   </script>
 </body>
 </html>
