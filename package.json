@@ -1,0 +1,25 @@
+{
+  "name": "zen",
+  "version": "1.0.0",
+  "description": "Zen Editor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  },
+  "workspaces": [
+    "crates/git",
+    "crates/fs",
+    "crates/terminal"
+  ],
+  "packageManager": "yarn@4.9.1",
+  "dependencies": {
+    "yarn": "^1.22.22"
+  }
+}
