@@ -691,6 +691,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"editor-core@workspace:crates/editor-core":
+  version: 0.0.0-use.local
+  resolution: "editor-core@workspace:crates/editor-core"
+  dependencies:
+    "@napi-rs/cli": "npm:^2.18.4"
+    ava: "npm:^6.0.1"
+  languageName: unknown
+  linkType: soft
+
 "electron@npm:^28.0.0":
   version: 28.3.3
   resolution: "electron@npm:28.3.3"
@@ -1802,15 +1811,6 @@ __metadata:
   checksum: 10c0/a86978a400984cd5f315b77ebf3fe53bb58c61f192278cafcb1f3fb32d584a21dc8e08b93171d7874b7cc972234d3455c467306cc1bfc4524b622e5ad3bfd671
   languageName: node
   linkType: hard
-
-"terminal@workspace:crates/terminal":
-  version: 0.0.0-use.local
-  resolution: "terminal@workspace:crates/terminal"
-  dependencies:
-    "@napi-rs/cli": "npm:^2.18.4"
-    ava: "npm:^6.0.1"
-  languageName: unknown
-  linkType: soft
 
 "time-zone@npm:^1.0.0":
   version: 1.0.0

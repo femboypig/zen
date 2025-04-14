@@ -16,7 +16,8 @@
   "workspaces": [
     "crates/git",
     "crates/fs",
-    "crates/terminal"
+    "crates/terminal",
+    "crates/editor-core"
   ],
   "packageManager": "yarn@4.9.1",
   "dependencies": {

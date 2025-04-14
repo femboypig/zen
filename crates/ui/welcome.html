@@ -355,7 +355,7 @@
       align-items: center;
     }
     
-    .command-item:hover {
+    .command-item:hover, .command-item.selected {
       background-color: #f0f0f0;
     }
     
@@ -527,7 +527,7 @@
     
     /* Custom scrollbar for file tree and sidebar */
     .file-tree::-webkit-scrollbar {
-      width: 8px;
+      width: 4px;
     }
     
     .file-tree::-webkit-scrollbar-track {
@@ -536,15 +536,10 @@
     
     .file-tree::-webkit-scrollbar-thumb {
       background-color: #cdcdcd;
-      border-radius: 4px;
-    }
-    
-    .file-tree::-webkit-scrollbar-thumb:hover {
-      background-color: #ababab;
     }
     
     .sidebar::-webkit-scrollbar {
-      width: 8px;
+      width: 4px;
     }
     
     .sidebar::-webkit-scrollbar-track {
@@ -553,11 +548,6 @@
     
     .sidebar::-webkit-scrollbar-thumb {
       background-color: #cdcdcd;
-      border-radius: 4px;
-    }
-    
-    .sidebar::-webkit-scrollbar-thumb:hover {
-      background-color: #ababab;
     }
     
     .file-tree-item {
@@ -780,8 +770,27 @@
 
     /* Command definitions */
     const commands = [
-      { id: 'cmd-reorganize', text: 'Reorganize UI', action: openReorganizeDialog }
+      { id: 'cmd-reorganize', text: 'Reorganize UI', action: openReorganizeDialog },
+      { id: 'cmd-open-project', text: 'Open Project', action: delayedOpenProject }
     ];
+    
+    /* Delayed project opening function */
+    async function delayedOpenProject() {
+      // Close command palette first
+      closeCommandPalette();
+      
+      // Wait for 250ms before opening the project
+      await new Promise(resolve => setTimeout(resolve, 250));
+      
+      try {
+        const result = await window.api.openProject();
+        if (result) {
+
+        }
+      } catch (err) {
+        console.error('Error opening project:', err);
+      }
+    }
     
     /* File Tree Functionality */
     // Initialize file tree from project data
@@ -1145,7 +1154,7 @@
         
         /* Custom scrollbar for file tree and sidebar */
         .file-tree::-webkit-scrollbar {
-          width: 8px;
+          width: 4px;
         }
         
         .file-tree::-webkit-scrollbar-track {
@@ -1154,15 +1163,10 @@
         
         .file-tree::-webkit-scrollbar-thumb {
           background-color: #cdcdcd;
-          border-radius: 4px;
-        }
-        
-        .file-tree::-webkit-scrollbar-thumb:hover {
-          background-color: #ababab;
         }
         
         .sidebar::-webkit-scrollbar {
-          width: 8px;
+          width: 4px;
         }
         
         .sidebar::-webkit-scrollbar-track {
@@ -1171,11 +1175,6 @@
         
         .sidebar::-webkit-scrollbar-thumb {
           background-color: #cdcdcd;
-          border-radius: 4px;
-        }
-        
-        .sidebar::-webkit-scrollbar-thumb:hover {
-          background-color: #ababab;
         }
         
         .file-tree-item {
@@ -1256,16 +1255,85 @@
     function filterCommandItems(query) {
       const items = document.querySelectorAll('.command-item');
       const lowerQuery = query.toLowerCase();
+      let visibleItems = [];
       
       items.forEach(item => {
-        if (lowerQuery && item.dataset.searchText.includes(lowerQuery)) {
+        if (lowerQuery === '' || item.dataset.searchText.includes(lowerQuery)) {
           item.classList.remove('hidden');
+          visibleItems.push(item);
         } else {
           item.classList.add('hidden');
         }
       });
+      
+      // Reset selection
+      clearCommandSelection();
+      selectedCommandIndex = visibleItems.length > 0 ? 0 : -1;
+      updateCommandSelection();
     }
-
+    
+    /* Clear selection highlight from all command items */
+    function clearCommandSelection() {
+      const items = document.querySelectorAll('.command-item');
+      items.forEach(item => item.classList.remove('selected'));
+    }
+    
+    /* Update command selection based on selectedCommandIndex */
+    function updateCommandSelection() {
+      const visibleItems = Array.from(document.querySelectorAll('.command-item:not(.hidden)'));
+      
+      if (selectedCommandIndex >= 0 && selectedCommandIndex < visibleItems.length) {
+        clearCommandSelection();
+        visibleItems[selectedCommandIndex].classList.add('selected');
+        
+        // Ensure the selected item is visible
+        visibleItems[selectedCommandIndex].scrollIntoView({ block: 'nearest' });
+      }
+    }
+    
+    /* Navigate command palette with keys */
+    function handleCommandPaletteKeys(event) {
+      const visibleItems = Array.from(document.querySelectorAll('.command-item:not(.hidden)'));
+      
+      switch(event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          if (visibleItems.length > 0) {
+            selectedCommandIndex = (selectedCommandIndex + 1) % visibleItems.length;
+            updateCommandSelection();
+          }
+          break;
+        
+        case 'ArrowUp':
+          event.preventDefault();
+          if (visibleItems.length > 0) {
+            selectedCommandIndex = (selectedCommandIndex - 1 + visibleItems.length) % visibleItems.length;
+            updateCommandSelection();
+          }
+          break;
+        
+        case 'Enter':
+          event.preventDefault();
+          if (selectedCommandIndex >= 0 && selectedCommandIndex < visibleItems.length) {
+            visibleItems[selectedCommandIndex].click();
+          }
+          break;
+        
+        case 'Escape':
+          event.preventDefault();
+          closeCommandPalette();
+          break;
+      }
+    }
+    
+    /* Command palette input handler */
+    commandPaletteInput.addEventListener('input', () => {
+      filterCommandItems(commandPaletteInput.value);
+    });
+    
+    /* Command palette keyboard handler */
+    commandPaletteInput.addEventListener('keydown', handleCommandPaletteKeys);
+    
     /* Move sidebar toggle button to match sidebar position */
     function updateSidebarTogglePosition(position) {
       // Remove from current parent
@@ -1436,17 +1504,15 @@
       
       // Start with empty results - only show commands when user types
       filterCommandItems('');
+      
+      // Reset the selected item
+      selectedCommandIndex = -1;
     }
     
     function closeCommandPalette() {
       commandPalette.classList.remove('visible');
       overlay.classList.remove('visible');
     }
-    
-    /* Command palette input handler */
-    commandPaletteInput.addEventListener('input', () => {
-      filterCommandItems(commandPaletteInput.value);
-    });
     
     /* Reorganize dialog */
     function openReorganizeDialog() {
@@ -1493,6 +1559,17 @@
         openCommandPalette();
         return false;
       }
+      
+      // Check for 'v' key
+      if (e.key === 'v' || e.keyCode === 86) {
+        // Only trigger if not in an input field
+        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          e.stopPropagation();
+          openCommandPalette();
+          return false;
+        }
+      }
     }, true); // Use capture phase
     
     // Approach 2: Traditional onkeydown
@@ -1504,6 +1581,16 @@
         e.preventDefault();
         openCommandPalette();
         return false;
+      }
+      
+      // Check for 'v' key
+      if ((e.key === 'v' || e.keyCode === 86) && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+        // Only trigger if not in an input field
+        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          openCommandPalette();
+          return false;
+        }
       }
       
       // Escape key
@@ -1523,6 +1610,15 @@
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'P' || event.key === 'p' || event.keyCode === 80)) {
         event.preventDefault();
         openCommandPalette();
+      }
+      
+      // Command palette with 'v' key
+      if ((event.key === 'v' || event.keyCode === 86) && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
+        // Only trigger if not in an input field
+        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          event.preventDefault();
+          openCommandPalette();
+        }
       }
     });
     
