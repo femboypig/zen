@@ -520,9 +520,10 @@
     }
     
     .file-tree {
-      padding: 0.5rem 0;
+
       overflow-y: auto;
-      height: calc(100% - 1rem);
+
+      overflow-x: hidden;
     }
     
     /* Custom scrollbar for file tree and sidebar */
@@ -553,6 +554,60 @@
     .file-tree-item {
       margin: 0;
       padding: 0;
+      position: relative;
+    }
+    
+    .file-tree-item-content {
+      display: flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      border-radius: 0.125rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .file-tree-item-content:hover {
+      background-color: transparent;
+    }
+    
+    .file-tree-item-content:hover:after {
+      content: "";
+      position: absolute;
+      left: -100px;
+      right: -100px;
+      top: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.05);
+      z-index: -1;
+    }
+    
+    .file-tree-item-content.active {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    .file-tree-name {
+      margin-left: 0.5rem;
+      font-size: 0.9375rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .file-tree-children {
+      padding-left: 1rem;
+    }
+    
+    .file-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    
+    .recent-project-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
     }
     
     /* Tab styles */
@@ -1147,9 +1202,10 @@
       
       styleElement.textContent = `
         .file-tree {
-          padding: 0.5rem 0;
+   
           overflow-y: auto;
-          height: calc(100% - 1rem);
+          height: 100%;
+          overflow-x: hidden;
         }
         
         /* Custom scrollbar for file tree and sidebar */
@@ -1180,6 +1236,7 @@
         .file-tree-item {
           margin: 0;
           padding: 0;
+          position: relative;
         }
         
         .file-tree-item-content {
@@ -1188,10 +1245,23 @@
           padding: 0.25rem 0.5rem;
           cursor: pointer;
           border-radius: 0.125rem;
+          position: relative;
+          z-index: 1;
         }
         
         .file-tree-item-content:hover {
+          background-color: transparent;
+        }
+        
+        .file-tree-item-content:hover:after {
+          content: "";
+          position: absolute;
+          left: -100px;
+          right: -100px;
+          top: 0;
+          bottom: 0;
           background-color: rgba(0, 0, 0, 0.05);
+          z-index: -1;
         }
         
         .file-tree-item-content.active {
