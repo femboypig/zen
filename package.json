@@ -11,13 +11,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@napi-rs/cli": "^2.18.4",
     "electron": "^28.0.0"
   },
   "workspaces": [
     "crates/git",
     "crates/fs",
     "crates/terminal",
-    "crates/editor-core"
+    "crates/keybindings",
+    "crates/watcher"
   ],
   "packageManager": "yarn@4.9.1",
   "dependencies": {

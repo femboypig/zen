@@ -134,6 +134,7 @@
       flex: 1;
       height: 100%;
       position: relative;
+      overflow: hidden; /* Prevent content from overflowing */
     }
     
     .tabs-container {
@@ -142,8 +143,57 @@
       background-color: #f5f5f5;
       border-bottom: 1px solid #e1e1e1;
       align-items: center;
+      position: relative; /* Needed for absolute positioning of scrollbar */
+      overflow: hidden; /* Hide anything spilling out, like the native scrollbar */
     }
     
+    /* New wrapper for scrollable tabs */
+    .tabs-scroll-wrapper {
+      flex: 1; /* Allow wrapper to take remaining space */
+      overflow-x: auto; /* Enable horizontal scrolling */
+      overflow-y: hidden; /* Hide vertical scrollbar */
+      white-space: nowrap; /* Keep tabs on one line */
+      height: 100%; /* Match parent height */
+      display: flex; /* Align tabs horizontally */
+      align-items: center;
+
+      /* Add properties to hide scrollbar visually */
+      scrollbar-width: none; /* Firefox */
+    }
+    
+    .tabs-scroll-wrapper::-webkit-scrollbar {
+       display: none; /* WebKit browsers */
+    }
+    
+    /* Container for the custom scrollbar */
+    .custom-scrollbar-container {
+      height: 4px; /* Height of the scrollbar track area */
+      background-color: transparent; /* No visible track */
+      position: absolute; /* Position relative to tabs-container */
+      bottom: 0;        /* Stick to the bottom */
+      left: 0;         /* Align to the left */
+      right: 0;        /* Stretch to the right */
+      display: none;     /* Hidden by default, controlled by JS */
+      /* Removed width and margin-left, now spans full width */
+    }
+    
+    /* The visible thumb of the custom scrollbar */
+    .custom-scrollbar-thumb {
+      height: 100%;
+      background-color: #cdcdcd8f;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      width: 0; /* Initial width set by JS */
+      opacity: 0; /* Controlled by JS */
+
+      transition: opacity 0.2s ease-in-out; /* Re-add transition */
+    }
+
+    /* Removed CSS Hover Rules - JS will handle visibility */
+    /* .tabs-container:hover .custom-scrollbar-container { ... } */
+    /* .tabs-container:hover .custom-scrollbar-thumb { ... } */
+
     .welcome-container {
       display: flex;
       flex-direction: column;
@@ -520,9 +570,7 @@
     }
     
     .file-tree {
-
       overflow-y: auto;
-
       overflow-x: hidden;
     }
     
@@ -599,14 +647,14 @@
     }
     
     .file-icon {
-      width: 18px;
-      height: 18px;
+      width: 1.125em;
+      height: 1.125em;
       flex-shrink: 0;
     }
     
     .recent-project-icon {
-      width: 18px;
-      height: 18px;
+      width: 1.125em;
+      height: 1.125em;
       flex-shrink: 0;
     }
     
@@ -643,8 +691,19 @@
     
     .tab.active {
       background-color: #fff;
+      position: relative;
     }
-
+    
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #fff;
+      z-index: 1; /* Ensure it's above the container border and scrollbar */
+    }
 
     .tab-name {
       color: #333;
@@ -693,11 +752,49 @@
             <img src="../../assets/icons/arrow_right.svg" alt="Next Tab">
           </div>
         </div>
-        <!-- Tabs will be dynamically added here -->
-        <div class="tab active" data-tab-id="welcome">
-          <div class="tab-name">Welcome to Zen</div>
+        <!-- New scrollable wrapper for tabs -->
+        <div class="tabs-scroll-wrapper" id="tabs-scroll-wrapper">
+          <!-- Tabs will be dynamically added here -->
+          <div class="tab active" data-tab-id="welcome">
+            <div class="tab-name">Welcome to Zen</div>
+          </div>
+          <div class="tab" data-tab-id="tab1">
+            <div class="tab-name">Tab 1</div>
+          </div>
+          <div class="tab" data-tab-id="tab2">
+            <div class="tab-name">Tab 2</div>
+          </div>
+          <div class="tab" data-tab-id="tab3">
+            <div class="tab-name">Tab 3</div>
+          </div>
+          <div class="tab" data-tab-id="tab4">
+            <div class="tab-name">Tab 4</div>
+          </div>
+          <div class="tab" data-tab-id="tab5">
+            <div class="tab-name">Tab 5</div>
+          </div>
+          <div class="tab" data-tab-id="tab6">
+            <div class="tab-name">Tab 6</div>
+          </div>
+          <div class="tab" data-tab-id="tab7">
+            <div class="tab-name">Tab 7</div>
+          </div>
+          <div class="tab" data-tab-id="tab8">
+            <div class="tab-name">Tab 8</div>
+          </div>
+          <div class="tab" data-tab-id="tab9">
+            <div class="tab-name">Tab 9</div>
+          </div>
+          <div class="tab" data-tab-id="tab10">
+            <div class="tab-name">Tab 10</div>
+          </div>
+        </div>
+        <!-- Custom scrollbar elements MOVED INSIDE tabs-container -->
+        <div class="custom-scrollbar-container" id="custom-scrollbar-container">
+          <div class="custom-scrollbar-thumb" id="custom-scrollbar-thumb"></div>
         </div>
       </div>
+      <!-- Welcome container is now correctly AFTER tabs-container -->
       <div class="welcome-container" data-content-id="welcome">
         <img class="zen-logo" src="../../assets/icons/zen-logo.svg" alt="Zen Logo">
         <div class="subtitle">Minimalistic code editor for focused work</div>
@@ -1202,7 +1299,6 @@
       
       styleElement.textContent = `
         .file-tree {
-   
           overflow-y: auto;
           height: 100%;
           overflow-x: hidden;
@@ -1281,14 +1377,14 @@
         }
         
         .file-icon {
-          width: 18px;
-          height: 18px;
+          width: 1.125em;
+          height: 1.125em;
           flex-shrink: 0;
         }
         
         .recent-project-icon {
-          width: 18px;
-          height: 18px;
+          width: 1.125em;
+          height: 1.125em;
           flex-shrink: 0;
         }
       `;
@@ -1753,6 +1849,171 @@
 
     // Setup tabs on page load
     setupTabs();
+
+    const tabsContainer = document.querySelector('.tabs-container'); // Get the outer container for hover detection
+    const tabsScrollWrapper = document.getElementById('tabs-scroll-wrapper');
+    const customScrollbarContainer = document.getElementById('custom-scrollbar-container');
+    const customScrollbarThumb = document.getElementById('custom-scrollbar-thumb');
+    const tabArrows = tabsContainer.querySelector('.tab-arrows'); // Cache arrow container lookup
+
+    let scrollUpdateQueued = false; // Flag for requestAnimationFrame throttling
+
+    /* Update custom scrollbar thumb */
+    function updateCustomScrollbar() {
+      // Reset the flag
+      scrollUpdateQueued = false;
+
+      const scrollWidth = tabsScrollWrapper.scrollWidth;
+      const clientWidth = tabsScrollWrapper.clientWidth;
+      const scrollLeft = tabsScrollWrapper.scrollLeft;
+
+      // Parent container width (where the thumb lives)
+      const containerWidth = customScrollbarContainer.clientWidth;
+      const arrowContainerWidth = tabArrows ? tabArrows.offsetWidth : 0; // Use cached element
+
+      // Only show scrollbar if content is scrollable
+      if (scrollWidth > clientWidth && containerWidth > 0) {
+        // Visibility handled by hover
+
+        const maxScrollLeft = scrollWidth - clientWidth;
+        const scrollPercentage = maxScrollLeft > 0 ? scrollLeft / maxScrollLeft : 0;
+
+        const availableScrollWidth = containerWidth; // Thumb lives in the full container width
+        // Calculate thumb width based on visible ratio within the scroll wrapper
+        const thumbWidthPercentage = Math.max(1, (clientWidth / scrollWidth) * 100);
+
+        // Adjust thumb width and position to fit within the space *after* the arrows
+        const spaceForThumb = availableScrollWidth - arrowContainerWidth;
+        let adjustedThumbWidth = Math.max(5, (thumbWidthPercentage / 100) * spaceForThumb); // Min width 5px
+
+        // Ensure thumb width doesn't exceed available space
+        adjustedThumbWidth = Math.min(adjustedThumbWidth, spaceForThumb);
+
+        const adjustedMaxThumbLeft = Math.max(0, spaceForThumb - adjustedThumbWidth);
+        const adjustedThumbLeft = scrollPercentage * adjustedMaxThumbLeft;
+
+        // Final position includes the offset of the arrows
+        customScrollbarThumb.style.left = `${arrowContainerWidth + adjustedThumbLeft}px`;
+        customScrollbarThumb.style.width = `${adjustedThumbWidth}px`;
+
+      } else {
+        customScrollbarThumb.style.width = '0';
+        customScrollbarThumb.style.left = '0';
+        // Hide container explicitly if not scrollable, even on hover
+        if (!isDraggingThumb) { // Don't hide if user is actively dragging
+             customScrollbarContainer.style.display = 'none';
+        }
+      }
+    }
+
+    /* Throttled scroll handler */
+    function handleScroll() {
+        if (!scrollUpdateQueued) {
+            scrollUpdateQueued = true;
+            window.requestAnimationFrame(updateCustomScrollbar);
+        }
+    }
+
+    /* Debounced resize handler */
+    let resizeTimeout;
+    function handleResize() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            updateCustomScrollbar();
+        }, 150); // Adjust debounce delay (ms) as needed
+    }
+
+    /* Show/hide scrollbar on hover */
+    tabsContainer.addEventListener('mouseenter', () => {
+       // Check if actually scrollable before showing
+       if (tabsScrollWrapper.scrollWidth > tabsScrollWrapper.clientWidth) {
+          customScrollbarContainer.style.display = 'block'; // Show container
+          customScrollbarThumb.style.opacity = '1';      // Show thumb
+          updateCustomScrollbar(); // Ensure position is correct on hover start
+       }
+    });
+
+    tabsContainer.addEventListener('mouseleave', () => {
+       customScrollbarContainer.style.display = 'none'; // Hide container
+       customScrollbarThumb.style.opacity = '0';     // Hide thumb
+    });
+
+
+    /* Listen for scroll events on the wrapper */
+    tabsScrollWrapper.addEventListener('scroll', handleScroll); // Use throttled handler
+
+    /* Initial calculation in case content is already scrollable */
+    /* Needs to run slightly delayed or after layout */
+    window.addEventListener('load', () => {
+        setTimeout(updateCustomScrollbar, 100); // Delay ensures dimensions are correct
+    });
+    /* Also recalculate on resize */
+     window.addEventListener('resize', handleResize); // Use debounced handler
+
+    /* Drag handling for custom scrollbar */
+    let isDraggingThumb = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+
+    customScrollbarThumb.addEventListener('mousedown', (e) => {
+      isDraggingThumb = true;
+      startX = e.clientX; // Record starting mouse position
+      startScrollLeft = tabsScrollWrapper.scrollLeft; // Record starting scroll position
+      customScrollbarThumb.style.cursor = 'grabbing'; // Change cursor
+      document.body.style.userSelect = 'none'; // Prevent text selection during drag
+
+      // Add listeners to the document to capture mouse move/up anywhere
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    });
+
+    function handleMouseMove(e) {
+      if (!isDraggingThumb) return;
+      e.preventDefault(); // Prevent unwanted drag behaviors
+
+      const currentX = e.clientX;
+      const dx = currentX - startX; // How far the mouse moved
+
+      // Calculate the scaling factor: how much content scrolls per pixel of thumb movement
+      const scrollWidth = tabsScrollWrapper.scrollWidth;
+      const clientWidth = tabsScrollWrapper.clientWidth;
+      const maxScrollLeft = scrollWidth - clientWidth;
+
+      const containerWidth = customScrollbarContainer.clientWidth;
+      const thumbWidth = customScrollbarThumb.offsetWidth;
+      const maxThumbLeft = Math.max(0, containerWidth - thumbWidth);
+
+      // Avoid division by zero if thumb/track has no movable range
+      if (maxThumbLeft <= 0) return;
+
+      // Use the available space after arrows for scaling
+      const spaceForThumb = containerWidth - (tabArrows ? tabArrows.offsetWidth : 0);
+      const maxThumbMovement = Math.max(0, spaceForThumb - thumbWidth);
+
+      if (maxThumbMovement <= 0) return; // Avoid division by zero
+
+      const scrollScale = maxScrollLeft / maxThumbMovement;
+      const scrollDelta = dx * scrollScale;
+
+      // Calculate new scroll position and clamp it
+      let newScrollLeft = startScrollLeft + scrollDelta;
+      newScrollLeft = Math.max(0, Math.min(newScrollLeft, maxScrollLeft));
+
+      tabsScrollWrapper.scrollLeft = newScrollLeft;
+      // The 'scroll' event listener on tabsScrollWrapper will update the thumb position visually (throttled)
+    }
+
+    function handleMouseUp() {
+      if (isDraggingThumb) {
+        isDraggingThumb = false;
+        customScrollbarThumb.style.cursor = 'grab'; // Restore cursor
+        document.body.style.userSelect = ''; // Restore text selection
+
+        // Remove listeners from the document
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      }
+    }
   </script>
 </body>
 </html>

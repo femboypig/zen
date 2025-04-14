@@ -691,15 +691,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"editor-core@workspace:crates/editor-core":
-  version: 0.0.0-use.local
-  resolution: "editor-core@workspace:crates/editor-core"
-  dependencies:
-    "@napi-rs/cli": "npm:^2.18.4"
-    ava: "npm:^6.0.1"
-  languageName: unknown
-  linkType: soft
-
 "electron@npm:^28.0.0":
   version: 28.3.3
   resolution: "electron@npm:28.3.3"
@@ -1253,6 +1244,15 @@ __metadata:
   checksum: 10c0/7dc94b628d57a66b71fb1b79510d460d662eb975b5f876d723f81549c2e9cd316d58a2ddf742b2b93a4fa6b17b2accaf1a738a0e2ea114bdfb13a32e5377e480
   languageName: node
   linkType: hard
+
+"keybindings@workspace:crates/keybindings":
+  version: 0.0.0-use.local
+  resolution: "keybindings@workspace:crates/keybindings"
+  dependencies:
+    "@napi-rs/cli": "npm:^2.18.4"
+    ava: "npm:^6.0.1"
+  languageName: unknown
+  linkType: soft
 
 "keyv@npm:^4.0.0":
   version: 4.5.4
@@ -1982,6 +1982,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "zen@workspace:."
   dependencies:
+    "@napi-rs/cli": "npm:^2.18.4"
     electron: "npm:^28.0.0"
     yarn: "npm:^1.22.22"
   languageName: unknown
