@@ -119,7 +119,7 @@ function handleProjectOpened(result) {
   
   // If project is a Git repository, add branch name
   if (result.gitInfo && result.gitInfo.isGitRepo && result.gitInfo.branchName) {
-    titlebarTitle.innerHTML = `${titleText} <span style="color: #888;">${result.gitInfo.branchName}</span>`;
+    titlebarTitle.innerHTML = `${titleText} <span style="color: var(--git-branch-text);">${result.gitInfo.branchName}</span>`;
   } else {
     titlebarTitle.textContent = titleText;
   }
@@ -134,7 +134,7 @@ function handleGitBranchChanged(data) {
   
   // Update title bar with project name and new branch
   const folderName = currentProjectPath.split('/').pop();
-  titlebarTitle.innerHTML = `${folderName} <span style="color: #888;">${data.branchName}</span>`;
+  titlebarTitle.innerHTML = `${folderName} <span style="color: var(--git-branch-text);">${data.branchName}</span>`;
 }
 
 // Handle file system change events
@@ -446,7 +446,7 @@ function addFileTreeStyles() {
     }
     
     .file-tree::-webkit-scrollbar-thumb {
-      background-color: #cdcdcd;
+      background-color: var(--scrollbar-thumb);
     }
     
     .sidebar::-webkit-scrollbar {
@@ -458,7 +458,7 @@ function addFileTreeStyles() {
     }
     
     .sidebar::-webkit-scrollbar-thumb {
-      background-color: #cdcdcd;
+      background-color: var(--scrollbar-thumb);
     }
     
     .file-tree-item {
@@ -488,12 +488,12 @@ function addFileTreeStyles() {
       right: -100px;
       top: 0;
       bottom: 0;
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: var(--file-tree-item-hover-bg);
       z-index: -1;
     }
     
     .file-tree-item-content.active {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: var(--file-tree-item-active-bg);
     }
     
     .file-tree-name {
@@ -734,13 +734,13 @@ function setSidebarPosition(position) {
     // Move sidebar to left
     const container = document.querySelector('.container');
     container.insertBefore(sidebar, container.firstChild);
-    sidebar.style.borderRight = '1px solid #e1e1e1';
+    sidebar.style.borderRight = `1px solid var(--sidebar-border)`;
     sidebar.style.borderLeft = 'none';
   } else {
     // Move sidebar to right
     const container = document.querySelector('.container');
     container.appendChild(sidebar);
-    sidebar.style.borderLeft = '1px solid #e1e1e1';
+    sidebar.style.borderLeft = `1px solid var(--sidebar-border)`;
     sidebar.style.borderRight = 'none';
   }
 }
@@ -1038,22 +1038,22 @@ function setupTabs() {
       if (this.currentIndex > 0) {
         leftArrow.classList.add('active');
         leftArrow.style.cursor = 'pointer';
-        leftArrow.querySelector('img').style.opacity = '1';
+        leftArrow.querySelector('img').style.opacity = 'var(--tab-arrow-active-opacity)';
       } else {
         leftArrow.classList.remove('active');
         leftArrow.style.cursor = 'not-allowed';
-        leftArrow.querySelector('img').style.opacity = '0.5';
+        leftArrow.querySelector('img').style.opacity = 'var(--tab-arrow-inactive-opacity)';
       }
       
       // Right arrow active only if we have history to go forward to
       if (this.currentIndex < this.stack.length - 1) {
         rightArrow.classList.add('active');
         rightArrow.style.cursor = 'pointer';
-        rightArrow.querySelector('img').style.opacity = '1';
+        rightArrow.querySelector('img').style.opacity = 'var(--tab-arrow-active-opacity)';
       } else {
         rightArrow.classList.remove('active');
         rightArrow.style.cursor = 'not-allowed';
-        rightArrow.querySelector('img').style.opacity = '0.5';
+        rightArrow.querySelector('img').style.opacity = 'var(--tab-arrow-inactive-opacity)';
       }
     }
   };
