@@ -1,92 +1,67 @@
 :root {
-  /* Base colors */
+  /* Base values - these will be overridden by theme values at runtime */
   --body-bg: #ffffff;
   --body-text: #333333;
   
-  /* Titlebar */
+  /* Variables below are placeholders and will be replaced dynamically at runtime by the theme system */
   --titlebar-bg: #f5f5f5;
   --titlebar-border: #e1e1e1;
   --titlebar-text: #555;
   --window-control-hover-bg: #e5e5e5;
   --window-control-close-hover-bg: #ff5252;
-  
-  /* Sidebar */
   --sidebar-bg: #f8f8f8;
   --sidebar-border: #e1e1e1;
-  
-  /* Tabs */
   --tabs-container-bg: #f5f5f5;
   --tab-border: #e1e1e1;
   --tab-active-bg: #fff;
   --tab-text: #333;
   --tab-unsaved-indicator: #4a9eff;
-  
-  /* Scrollbars */
   --scrollbar-thumb: #cdcdcd;
   --scrollbar-thumb-translucent: #cdcdcd8f;
-  
-  /* Welcome screen */
   --subtitle-text: #666;
-  
-  /* Buttons */
   --option-button-bg: transparent;
   --option-button-text: #333;
   --option-button-hover-bg: rgba(0, 0, 0, 0.05);
   --option-button-active-bg: rgba(0, 0, 0, 0.1);
-  
-  /* Settings panel */
   --settings-panel-bg: #f8f8f8;
   --settings-panel-border: #e0e0e0;
-  
-  /* Checkbox */
   --checkbox-border: #ccc;
   --checkbox-bg: #fff;
   --checkbox-checked-bg: #555;
   --checkbox-label-text: #333;
-  
-  /* Downbar */
   --downbar-bg: #f5f5f5;
   --downbar-border: #e1e1e1;
   --downbar-active-icon: #2196F3;
   --downbar-icon-hover-filter: opacity(0.7) drop-shadow(0 0 0 #666);
   --downbar-icon-active-filter: invert(48%) sepia(80%) saturate(2476%) hue-rotate(190deg) brightness(90%) contrast(95%);
-  
-  /* Command palette */
   --command-palette-bg: #fff;
   --command-palette-shadow: rgba(0, 0, 0, 0.15);
   --command-palette-input-border: #e0e0e0;
   --command-palette-input-bg: #f8f8f8;
   --command-item-hover-bg: #f0f0f0;
-  
-  /* Reorganize dialog */
   --dialog-bg: #fff;
   --dialog-shadow: rgba(0, 0, 0, 0.15);
   --dialog-header-bg: #f8f8f8;
   --dialog-header-border: #e0e0e0;
   --dialog-footer-bg: #f8f8f8;
   --dialog-footer-border: #e0e0e0;
-  
-  /* Reorganize buttons */
   --reorganize-button-bg: #f5f5f5;
   --reorganize-button-border: #e0e0e0;
   --reorganize-button-hover-bg: #e8e8e8;
   --reorganize-button-active-bg: #e0e0e0;
-  
-  /* Overlay */
   --overlay-bg: rgba(0, 0, 0, 0.3);
-  
-  /* Recent projects */
   --recent-projects-header-text: #666;
   --recent-project-item-text: #333;
   --recent-project-item-hover-bg: rgba(0, 0, 0, 0.05);
   --recent-project-item-active-bg: rgba(0, 0, 0, 0.1);
-  
-  /* File tree */
   --file-tree-item-hover-bg: rgba(0, 0, 0, 0.05);
   --file-tree-item-active-bg: rgba(0, 0, 0, 0.1);
-  
-  /* JavaScript Dynamic Styles */
   --git-branch-text: #888;
   --tab-arrow-inactive-opacity: 0.5;
   --tab-arrow-active-opacity: 1;
+  
+  /* Icon filters for theming */
+  --icon-filter: none;
+  --icon-hover-filter: brightness(0.8);
+  --filetree-icon-filter: none;
 } 

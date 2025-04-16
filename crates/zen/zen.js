@@ -44,6 +44,9 @@ window.api.onFileSystemChange(handleFileChange);
 // Project opened listener
 window.api.onProjectOpened(handleProjectOpened);
 
+// Theme change listener
+window.api.onThemeChanged(handleThemeChanged);
+
 /* Load settings on startup */
 window.api.getSettings();
 
@@ -55,8 +58,111 @@ window.api.storeGet('sidebarWidth', '15rem').then(width => {
 /* Command definitions */
 const commands = [
   { id: 'cmd-reorganize', text: 'Reorganize UI', action: openReorganizeDialog },
-  { id: 'cmd-open-project', text: 'Open Project', action: delayedOpenProject }
+  { id: 'cmd-open-project', text: 'Open Project', action: delayedOpenProject },
+  { id: 'cmd-theme-light', text: 'Switch to Light Theme', action: () => switchTheme('light') },
+  { id: 'cmd-theme-dark', text: 'Switch to Dark Theme', action: () => switchTheme('dark') }
 ];
+
+// Initialize theme system
+function initializeTheme() {
+  // Get the current theme from the main process
+  window.api.getCurrentTheme().then(theme => {
+    if (theme && theme.variables) {
+      applyThemeVariables(theme.variables);
+    }
+  }).catch(err => {
+    console.error('Error loading current theme:', err);
+  });
+  
+  // Add available themes to command palette
+  window.api.getAvailableThemes().then(themes => {
+    // Add theme commands dynamically
+    themes.forEach(theme => {
+      if (!commands.find(cmd => cmd.id === `cmd-theme-${theme.name}`)) {
+        commands.push({
+          id: `cmd-theme-${theme.name}`,
+          text: `Switch to ${theme.name} Theme`,
+          action: () => switchTheme(theme.name)
+        });
+      }
+    });
+  }).catch(err => {
+    console.error('Error loading available themes:', err);
+  });
+}
+
+// Switch to a different theme
+function switchTheme(themeName) {
+  window.api.switchTheme(themeName).then(success => {
+    if (success) {
+      console.log(`Switched to theme: ${themeName}`);
+    } else {
+      console.error(`Failed to switch to theme: ${themeName}`);
+    }
+    closeCommandPalette();
+  }).catch(err => {
+    console.error('Error switching theme:', err);
+  });
+}
+
+// Handle theme changes
+function handleThemeChanged(themeVariables) {
+  applyThemeVariables(themeVariables);
+  
+  // Apply theme to all existing and future SVG icons
+  document.addEventListener('DOMNodeInserted', function(e) {
+    if (e.target.nodeType === 1) { // ELEMENT_NODE
+      // Check if new icons were added
+      const newIcons = e.target.querySelectorAll('img');
+      if (newIcons.length > 0) {
+        // Re-apply filters to all icons
+        setTimeout(applyIconFilters, 0);
+      }
+    }
+  });
+}
+
+// Apply theme variables to CSS
+function applyThemeVariables(variables) {
+  // Apply each variable to root
+  Object.entries(variables).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(`--${key}`, value);
+  });
+  
+  // Apply icon filters to all SVG icons
+  applyIconFilters();
+}
+
+// Apply icon filters based on current theme
+function applyIconFilters() {
+  // General SVG icons (menus, controls, etc.)
+  const allIcons = document.querySelectorAll('img:not(.file-icon):not(.folder-icon):not(.downbar-icon)');
+  const iconFilter = getComputedStyle(document.documentElement).getPropertyValue('--icon-filter').trim();
+  
+  allIcons.forEach(icon => {
+    // Apply the icon filter but preserve any existing classes and other styles
+    if (iconFilter && iconFilter !== 'none') {
+      icon.style.filter = iconFilter;
+    } else {
+      icon.style.filter = '';
+    }
+  });
+  
+  // Don't set filters on downbar icons directly - let CSS handle active/hover states
+  // CSS will handle these states through class combinations
+  
+  // File tree icons if they exist
+  const fileTreeIcons = document.querySelectorAll('.file-icon, .folder-icon');
+  const fileTreeFilter = getComputedStyle(document.documentElement).getPropertyValue('--filetree-icon-filter').trim();
+  
+  fileTreeIcons.forEach(icon => {
+    if (fileTreeFilter && fileTreeFilter !== 'none') {
+      icon.style.filter = fileTreeFilter;
+    } else {
+      icon.style.filter = '';
+    }
+  });
+}
 
 /* Delayed project opening function */
 async function delayedOpenProject() {
@@ -95,6 +201,9 @@ function initializeFileTree(fileTree) {
   
   // Add CSS for file tree if not already added
   addFileTreeStyles();
+  
+  // Apply theme to newly added elements
+  applyIconFilters();
 }
 
 // Handle project opened event
@@ -172,6 +281,9 @@ function handleFileChange(event) {
             const childElement = createFileTreeElement(child);
             childrenContainer.appendChild(childElement);
           });
+          
+          // Apply theme to newly added elements
+          applyIconFilters();
         }).catch(err => {
           console.error('Error refreshing directory after file creation:', err);
         });
@@ -203,6 +315,13 @@ function createFileTreeElement(entry) {
     folderIcon.alt = 'Folder';
     folderIcon.dataset.openIcon = '../../assets/icons/file_icons/folder_open.svg';
     folderIcon.dataset.closedIcon = '../../assets/icons/file_icons/folder.svg';
+    
+    // Apply current theme filter
+    const fileTreeFilter = getComputedStyle(document.documentElement).getPropertyValue('--filetree-icon-filter').trim();
+    if (fileTreeFilter && fileTreeFilter !== 'none') {
+      folderIcon.style.filter = fileTreeFilter;
+    }
+    
     itemContent.appendChild(folderIcon);
     
     // Add click handler for directory expansion
@@ -213,6 +332,13 @@ function createFileTreeElement(entry) {
     fileIcon.className = 'file-icon';
     fileIcon.src = getFileIcon(entry.name);
     fileIcon.alt = 'File';
+    
+    // Apply current theme filter
+    const fileTreeFilter = getComputedStyle(document.documentElement).getPropertyValue('--filetree-icon-filter').trim();
+    if (fileTreeFilter && fileTreeFilter !== 'none') {
+      fileIcon.style.filter = fileTreeFilter;
+    }
+    
     itemContent.appendChild(fileIcon);
     
     // Add click handler for opening files
@@ -390,6 +516,12 @@ async function toggleDirectory(event) {
       newChildrenContainer.style.display = 'block';
       if (folderIcon && folderIcon.dataset.openIcon) {
         folderIcon.src = folderIcon.dataset.openIcon;
+        
+        // Reapply the theme filter
+        const fileTreeFilter = getComputedStyle(document.documentElement).getPropertyValue('--filetree-icon-filter').trim();
+        if (fileTreeFilter && fileTreeFilter !== 'none') {
+          folderIcon.style.filter = fileTreeFilter;
+        }
       }
     } catch (err) {
       console.error('Error expanding directory:', err);
@@ -403,10 +535,22 @@ async function toggleDirectory(event) {
     if (isVisible) {
       if (folderIcon && folderIcon.dataset.closedIcon) {
         folderIcon.src = folderIcon.dataset.closedIcon;
+        
+        // Reapply the theme filter
+        const fileTreeFilter = getComputedStyle(document.documentElement).getPropertyValue('--filetree-icon-filter').trim();
+        if (fileTreeFilter && fileTreeFilter !== 'none') {
+          folderIcon.style.filter = fileTreeFilter;
+        }
       }
     } else {
       if (folderIcon && folderIcon.dataset.openIcon) {
         folderIcon.src = folderIcon.dataset.openIcon;
+        
+        // Reapply the theme filter
+        const fileTreeFilter = getComputedStyle(document.documentElement).getPropertyValue('--filetree-icon-filter').trim();
+        if (fileTreeFilter && fileTreeFilter !== 'none') {
+          folderIcon.style.filter = fileTreeFilter;
+        }
       }
     }
   }
@@ -1253,3 +1397,14 @@ function handleMouseUp() {
     document.removeEventListener('mouseup', handleMouseUp);
   }
 }
+
+// Initialize event listeners
+function initEventListeners() {
+  // ... existing event listeners
+  
+  // When DOM content is loaded, initialize theme system
+  document.addEventListener('DOMContentLoaded', initializeTheme);
+}
+
+// Call initEventListeners at the end of the file
+initEventListeners();

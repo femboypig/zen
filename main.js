@@ -9,6 +9,7 @@ const store = require('./crates/mod/store');
 const fileSystem = require('./crates/mod/file_system');
 const sessions = require('./crates/mod/sessions');
 const gitUtils = require('./crates/mod/git_utils');
+const themeManager = require('./crates/mod/theme_manager');
 
 let mainWindow;
 let currentProjectPath = null;
@@ -40,6 +41,9 @@ function createWindow() {
     mainWindow.maximize();
   }
 
+  // Make mainWindow globally accessible for theme manager
+  global.mainWindow = mainWindow;
+
   mainWindow.loadFile(path.join(__dirname, 'crates/ui/welcome.html'));
   
   // Инициализируем масштабирование UI
@@ -68,6 +72,7 @@ function createWindow() {
       currentProjectPath = null;
     }
     mainWindow = null;
+    global.mainWindow = null;
   });
 }
 
@@ -156,6 +161,19 @@ ipcMain.handle('open-project', async (_, projectPath) => {
   }
   
   return null;
+});
+
+// Theme management IPC handlers
+ipcMain.handle('get-current-theme', () => {
+  return themeManager.getCurrentTheme();
+});
+
+ipcMain.handle('get-available-themes', () => {
+  return themeManager.getAvailableThemes();
+});
+
+ipcMain.handle('switch-theme', (_, themeName) => {
+  return themeManager.switchTheme(themeName);
 });
 
 ipcMain.handle('get-recent-projects', () => {

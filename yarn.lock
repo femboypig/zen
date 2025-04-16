@@ -161,11 +161,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.14.0
-  resolution: "@types/node@npm:22.14.0"
+  version: 22.14.1
+  resolution: "@types/node@npm:22.14.1"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10c0/9d79f3fa1af9c2c869514f419c4a4905b34c10e12915582fd1784868ac4e74c6d306cf5eb47ef889b6750ab85a31be96618227b86739c4a3e0b1c15063f384c6
+  checksum: 10c0/d49c4d00403b1c2348cf0701b505fd636d80aabe18102105998dc62fdd36dcaf911e73c7a868c48c21c1022b825c67b475b65b1222d84b704d8244d152bb7f86
   languageName: node
   linkType: hard
 
@@ -1245,15 +1245,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keybindings@workspace:crates/keybindings":
-  version: 0.0.0-use.local
-  resolution: "keybindings@workspace:crates/keybindings"
-  dependencies:
-    "@napi-rs/cli": "npm:^2.18.4"
-    ava: "npm:^6.0.1"
-  languageName: unknown
-  linkType: soft
-
 "keyv@npm:^4.0.0":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
@@ -1869,6 +1860,15 @@ __metadata:
   checksum: 10c0/e70e0339f6b36f34c9816f6bf9662372bd241714dc77508d231d08386d94f2c4aa1ba1318614f92015f40d45aae1b9075cd30bd490efbe39387b60a76ca3f045
   languageName: node
   linkType: hard
+
+"watcher@workspace:crates/watcher":
+  version: 0.0.0-use.local
+  resolution: "watcher@workspace:crates/watcher"
+  dependencies:
+    "@napi-rs/cli": "npm:^2.18.4"
+    ava: "npm:^6.0.1"
+  languageName: unknown
+  linkType: soft
 
 "webidl-conversions@npm:^3.0.0":
   version: 3.0.1

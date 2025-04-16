@@ -12,6 +12,9 @@ let projectOpenedCallback = null;
 /* Git branch changed callback */
 let gitBranchChangedCallback = null;
 
+/* Theme changed callback */
+let themeChangedCallback = null;
+
 /* Handle messages from the main process */
 ipcRenderer.on('update-ui-scaling', (_, data) => {
   if (uiScaleChangeCallback) {
@@ -52,6 +55,19 @@ ipcRenderer.on('update-ui-scaling', (_, data) => {
       svg.setAttribute('height', baseHeight * data.svgScaleFactor);
     }
   });
+});
+
+/* Handle theme change events from the main process */
+ipcRenderer.on('apply-theme', (_, themeVariables) => {
+  // Apply theme variables to CSS
+  for (const [key, value] of Object.entries(themeVariables)) {
+    document.documentElement.style.setProperty(`--${key}`, value);
+  }
+  
+  // Call theme changed callback if defined
+  if (themeChangedCallback) {
+    themeChangedCallback(themeVariables);
+  }
 });
 
 /* Handle file system change events from the main process */
@@ -102,6 +118,14 @@ contextBridge.exposeInMainWorld(
     onGitBranchChanged: (callback) => {
       gitBranchChangedCallback = callback;
     },
+    
+    /* Theme management */
+    onThemeChanged: (callback) => {
+      themeChangedCallback = callback;
+    },
+    getCurrentTheme: () => ipcRenderer.invoke('get-current-theme'),
+    getAvailableThemes: () => ipcRenderer.invoke('get-available-themes'),
+    switchTheme: (themeName) => ipcRenderer.invoke('switch-theme', themeName),
     
     /* Other project actions */
     newFile: () => ipcRenderer.invoke('new-file'),

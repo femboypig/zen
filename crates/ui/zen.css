@@ -322,39 +322,38 @@ body {
   align-items: center;
 }
 
+/* Downbar buttons with theme-aware behavior */
 .downbar-button {
+  width: 2rem;
   height: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 0 0.625rem;
+  align-items: center;
   cursor: pointer;
+  margin: 0 0.125rem;
 }
 
-.downbar-button:hover {
-  background-color: transparent;
-}
 
-.downbar-button:hover .downbar-icon {
-  filter: var(--downbar-icon-hover-filter);
-}
-
-.downbar-button:active {
-  background-color: transparent;
-}
-
+/* Base icon style - applies the theme's base filter */
 .downbar-icon {
   width: 1.25rem;
   height: 1.25rem;
+  filter: var(--icon-filter);
 }
 
+/* Apply special coloring for active state */
+.downbar-button.active .downbar-icon {
+  filter: var(--downbar-icon-active-filter);
+}
+
+/* Apply hover effect only if not active */
+.downbar-button:not(.active):hover .downbar-icon {
+  filter: var(--icon-hover-filter);
+}
+
+/* Handle horizontal flip separately to not interfere with filters */
 .downbar-icon.flip-horizontal {
   transform: scaleX(-1);
-}
-
-.downbar-button.active .downbar-icon {
-  color: var(--downbar-active-icon);
-  filter: var(--downbar-icon-active-filter);
 }
 
 /* Command palette styles */
