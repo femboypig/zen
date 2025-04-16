@@ -135,8 +135,8 @@ function applyThemeVariables(variables) {
 
 // Apply icon filters based on current theme
 function applyIconFilters() {
-  // General SVG icons (menus, controls, etc.)
-  const allIcons = document.querySelectorAll('img:not(.file-icon):not(.folder-icon):not(.downbar-icon)');
+  // General SVG icons (menus, controls, etc.) - Exclude zen-logo
+  const allIcons = document.querySelectorAll('img:not(.file-icon):not(.folder-icon):not(.downbar-icon):not(.zen-logo)');
   const iconFilter = getComputedStyle(document.documentElement).getPropertyValue('--icon-filter').trim();
   
   allIcons.forEach(icon => {
